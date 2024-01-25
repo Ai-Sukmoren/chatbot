@@ -29,12 +29,12 @@ tools = [
         func=youtube.run,
         return_direct=True,
     ),
-    Tool.from_function(
-        name="Cypher QA",
-        description="Provide information about movies questions using Cypher",
-        func=cypher_qa,
-        return_direct=True,
-    ),
+    # Tool.from_function(
+    #     name="Cypher QA",
+    #     description="Provide information about movies questions using Cypher",
+    #     func=cypher_qa,
+    #     return_direct=True,
+    # ),
     # Tool.from_function(
     #     name="Vector Search Index",
     #     description="Provides information about movie plots using Vector Search",
