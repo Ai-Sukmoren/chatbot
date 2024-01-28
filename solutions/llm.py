@@ -1,21 +1,33 @@
-import streamlit as st
-from langchain_openai import ChatOpenAI
+import os
+from dotenv import load_dotenv
+from langchain_openai import AzureChatOpenAI
+from langchain.embeddings import AzureOpenAIEmbeddings
 
-llm = ChatOpenAI(
-    openai_api_key=st.secrets["OPENAI_API_KEY"],
-    model=st.secrets["OPENAI_MODEL_4"],
-    temperature=0
+
+# Load environment variables from .env file
+load_dotenv()
+
+AZURE_OPENAI_ENDPOINT=os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_OPENAI_API_KEY=os.getenv("AZURE_OPENAI_API_KEY")
+
+
+llm = AzureChatOpenAI(
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version="2023-03-15-preview",
+    azure_deployment="gpt4_1106",
+    openai_api_key=AZURE_OPENAI_API_KEY,
 )
 
-
-llm_3 = ChatOpenAI(
-    openai_api_key=st.secrets["OPENAI_API_KEY"],
-    model=st.secrets["OPENAI_MODEL_3"],
-    temperature=0
+llm_3 = AzureChatOpenAI(
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    openai_api_version="2023-03-15-preview",
+    azure_deployment="gpt-35-turbo-0613",
+    openai_api_key=AZURE_OPENAI_API_KEY,
 )
 
-
-from langchain_openai import OpenAIEmbeddings
-
-embeddings = OpenAIEmbeddings(openai_api_key=st.secrets["OPENAI_API_KEY"])
-
+embeddings = AzureOpenAIEmbeddings(
+            azure_endpoint=AZURE_OPENAI_ENDPOINT,
+            openai_api_version="2023-03-15-preview",
+            deployment="embedada",
+            openai_api_key=AZURE_OPENAI_API_KEY,
+            )

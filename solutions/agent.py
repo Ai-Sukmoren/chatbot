@@ -10,16 +10,12 @@ from solutions.plot import kg_qa
 from solutions.translatorEN_TH import translate_qa_en_th
 from solutions.translatorTH_EN import translate_qa_th_en
 
+
 tools = [
-    Tool.from_function(
-        name="General Chat",
-        description="For general chat not covered by other tools",
-        func=llm.invoke,
-        return_direct=True,
-    ),
+   
     Tool.from_function(
         name="Damac agreement",
-        description="Provides information about DAMAC agreement",
+        description="Helpful when users inquire about agreements related to Damac, alway use this tool when you can't answer spcific question about damac",
         func=dmac_qa,
         return_direct=True,
     ),
@@ -29,18 +25,6 @@ tools = [
         func=youtube.run,
         return_direct=True,
     ),
-    # Tool.from_function(
-    #     name="Cypher QA",
-    #     description="Provide information about movies questions using Cypher",
-    #     func=cypher_qa,
-    #     return_direct=True,
-    # ),
-    # Tool.from_function(
-    #     name="Vector Search Index",
-    #     description="Provides information about movie plots using Vector Search",
-    #     func=kg_qa,
-    #     return_direct=True,
-    # ),
         Tool.from_function(
         name="Translator from TH to EN",
         description="use when need to translate thai to english",
@@ -66,6 +50,9 @@ agent_prompt = PromptTemplate.from_template(
     """
         You are a lawyer who is specilized in answering ansewer regard to law and regulation decision question.
         Be as helpful as possible and return as much information as possible.
+        Do not answer any questions that do not relate to Law,agreement and damac.
+        
+        Do not answer any questions using your pre-trained knowledge, only use the information provided in the context.
 
         TOOLS:
         ------
@@ -82,7 +69,6 @@ agent_prompt = PromptTemplate.from_template(
         Action Input: the input to the action
         Observation: the result of the action
         ```
-
         When you have a response to say to the Human, or if you do not need to use a tool, you MUST use the format:
 
         ```
@@ -97,8 +83,9 @@ agent_prompt = PromptTemplate.from_template(
 
         New input: {input}
         {agent_scratchpad}
-        """
-)
+        
+        """)
+
 agent = create_react_agent(llm, tools, agent_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True)
 
