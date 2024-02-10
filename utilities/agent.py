@@ -3,11 +3,17 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 from utilities.llms import llm_4
-from utilities.function import dmac_qa,youtube
+from utilities.function import dmac_qa, youtube
+
 
 
 tools = [
-   
+    Tool.from_function(
+        name="General Chat",
+        description="For general chat not covered by other tools",
+        func=llm_4.invoke,
+        return_direct=True
+    ),
     Tool.from_function(
         name="Damac agreement",
         description="Helpful when users inquire about agreements related to Damac, alway use this tool when you can't answer spcific question about damac",
@@ -17,7 +23,7 @@ tools = [
     Tool.from_function(
         name="Youtube search",
         description="For proving youtube url to user",
-        func=youtube.run,
+        func=youtube,
         return_direct=True,
     )
         
@@ -31,11 +37,8 @@ memory = ConversationBufferWindowMemory(
 
 agent_prompt = PromptTemplate.from_template(
     """
-        You are a lawyer who is specilized in answering ansewer regard to law and regulation decision question.
+        You general chat assistant helper
         Be as helpful as possible and return as much information as possible.
-        Do not answer any questions that do not relate to Law,agreement and damac.
-        
-        Do not answer any questions using your pre-trained knowledge, only use the information provided in the context.
 
         TOOLS:
         ------
@@ -80,6 +83,6 @@ def generate_response(prompt):
     """
 
     response = agent_executor.invoke({"input": prompt})
-
-    return response['output']
-
+    response = response['output']
+    response = response.replace('\n```', '')
+    return response

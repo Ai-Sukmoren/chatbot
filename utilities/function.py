@@ -8,7 +8,9 @@ from langchain_community.vectorstores.neo4j_vector import Neo4jVector
 from langchain.chains import RetrievalQA
 from langchain_community.tools import YouTubeSearchTool
 from utilities.llms import llm_4, embeddings
+from langchain_community.tools import YouTubeSearchTool
 import streamlit as st
+import ast
 
 def dmac_qa(question):
     """
@@ -121,5 +123,12 @@ def kg_qa(prompt):
     result = qa.run(prompt)
     return str(result)
 
-# youtube serch tool
-youtube = YouTubeSearchTool()
+def youtube(prompt):
+    youtube = YouTubeSearchTool()
+    result = youtube.run(prompt)
+    # Convert the string representation of the list back into a Python list
+    result_list = ast.literal_eval(result)
+
+    # Extract the first link
+    first_link = result_list[0]
+    return first_link

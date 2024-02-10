@@ -1,17 +1,17 @@
 import streamlit as st
-from utils import write_message
-from solutions.agent import generate_response
+from utilities.agent import generate_response
+
 
 # Page Config
-st.set_page_config("Jarvis", page_icon="⚖️")
+st.set_page_config("Ebert", page_icon=":movie_camera:")
 
 # Set up Session State
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi, I'm the DAMAC information center Chatbot!  How can I help you or suggest you about the agreement?"},
+        {"role": "assistant", "content": "Hi, I'm the anime experts Chatbot!  How can I help you?"},
     ]
 
-def write_message(role, content, save=True):
+def write_message(role, content, save = True):
     """
     This is a helper function that saves a message to the
      session state and then writes a message to the UI
@@ -28,17 +28,17 @@ def write_message(role, content, save=True):
 def handle_submit(message):
     # Handle the response
     with st.spinner('Thinking...'):
-
         response = generate_response(message)
+        from time import sleep
+        sleep(1)
         write_message('assistant', response)
-
-
+        
 # Display messages in Session State
 for message in st.session_state.messages:
     write_message(message['role'], message['content'], save=False)
 
 # Handle any user input
-if prompt := st.chat_input("type somthing"):
+if prompt := st.chat_input("ask me somthing"):
     # Display user message in chat message container
     write_message('user', prompt)
 
