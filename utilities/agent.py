@@ -2,13 +2,8 @@ from langchain.tools import Tool
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
-from solutions.llm import llm
-from solutions.damac import dmac_qa
-from solutions.youtube import youtube
-from solutions.graph import cypher_qa
-from solutions.plot import kg_qa
-from solutions.translatorEN_TH import translate_qa_en_th
-from solutions.translatorTH_EN import translate_qa_th_en
+from utilities.llms import llm_4
+from utilities.function import dmac_qa,youtube
 
 
 tools = [
@@ -24,25 +19,13 @@ tools = [
         description="For proving youtube url to user",
         func=youtube.run,
         return_direct=True,
-    ),
-        Tool.from_function(
-        name="Translator from TH to EN",
-        description="use when need to translate thai to english",
-        func=translate_qa_th_en,
-        return_direct=True,
-    ),
-        Tool.from_function(
-        name="Translator from EN to TH",
-        description="use when need to transalte english to thai",
-        func=translate_qa_en_th,
-        return_direct=True,
-    ),
+    )
         
 ]
 
 memory = ConversationBufferWindowMemory(
     memory_key="chat_history",
-    k=5,
+    k=3,
     return_messages=True,
 )
 
@@ -86,11 +69,9 @@ agent_prompt = PromptTemplate.from_template(
         
         """)
 
-agent = create_react_agent(llm, tools, agent_prompt)
+agent = create_react_agent(llm_4, tools, agent_prompt)
+
 agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True)
-
-
-
 
 def generate_response(prompt):
     """
