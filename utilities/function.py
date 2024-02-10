@@ -8,9 +8,12 @@ from langchain_community.vectorstores.neo4j_vector import Neo4jVector
 from langchain.chains import RetrievalQA
 from langchain_community.tools import YouTubeSearchTool
 from utilities.llms import llm_4, embeddings
-from langchain_community.tools import YouTubeSearchTool
 import streamlit as st
 import ast
+from IPython.display import Image, display
+import re
+import ast
+
 
 def dmac_qa(question):
     """
@@ -131,4 +134,17 @@ def youtube(prompt):
 
     # Extract the first link
     first_link = result_list[0]
-    return first_link
+    
+    # Example YouTube video URL
+    video_url = first_link
+
+    # Extract video ID from the URL
+    video_id = re.search(r'(?<=v=)[^&#]+', video_url).group()
+
+    # Construct the thumbnail URL
+    thumbnail_url = f'https://img.youtube.com/vi/{video_id}/0.jpg'
+
+    # Display the thumbnail
+    pic = display(Image(url=thumbnail_url))
+    
+    return f'{first_link}{pic}'
