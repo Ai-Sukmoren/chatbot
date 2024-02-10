@@ -11,6 +11,19 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "Hi, I'm the DAMAC information center Chatbot!  How can I help you or suggest you about the agreement?"},
     ]
 
+def write_message(role, content, save=True):
+    """
+    This is a helper function that saves a message to the
+     session state and then writes a message to the UI
+    """
+    # Append to session state
+    if save:
+        st.session_state.messages.append({"role": role, "content": content})
+
+    # Write to UI
+    with st.chat_message(role):
+        st.markdown(content)
+
 # Submit handler
 def handle_submit(message):
     # Handle the response
