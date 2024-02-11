@@ -1,3 +1,5 @@
 asecrets.toml
 .env
 .venv
+.csv
+.pdf
