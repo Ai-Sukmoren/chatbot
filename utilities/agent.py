@@ -3,7 +3,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 from utilities.llms import llm_4
-from utilities.function import dmac_qa, youtube
+from utilities.function import youtube
 
 
 
@@ -13,12 +13,6 @@ tools = [
         description="For general chat not covered by other tools",
         func=llm_4.invoke,
         return_direct=True
-    ),
-    Tool.from_function(
-        name="Damac agreement",
-        description="Helpful when users inquire about agreements related to Damac, alway use this tool when you can't answer spcific question about damac",
-        func=dmac_qa,
-        return_direct=True,
     ),
     Tool.from_function(
         name="Youtube search",

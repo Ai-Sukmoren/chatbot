@@ -3,7 +3,7 @@ from utilities.agent import generate_response
 
 
 # Page Config
-st.set_page_config("Ebert", page_icon=":movie_camera:")
+st.set_page_config("Jarvis", page_icon= "👾")
 
 # Set up Session State
 if "messages" not in st.session_state:
@@ -21,8 +21,12 @@ def write_message(role, content, save = True):
         st.session_state.messages.append({"role": role, "content": content})
 
     # Write to UI
-    with st.chat_message(role):
-        st.markdown(content)
+    if role == "assistant":
+        with st.chat_message(role, avatar = "👾"):
+            st.markdown(content)
+    else:
+        with st.chat_message(role):
+            st.markdown(content)
 
 # Submit handler
 def handle_submit(message):
