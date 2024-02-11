@@ -3,7 +3,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 from utilities.llms import llm_4
-from utilities.function import youtube
+from utilities.function import youtube_streamlit
 
 
 
@@ -17,7 +17,7 @@ tools = [
     Tool.from_function(
         name="Youtube search",
         description="For proving youtube url to user",
-        func=youtube,
+        func=youtube_streamlit,
         return_direct=True,
     )
         
@@ -78,5 +78,9 @@ def generate_response(prompt):
 
     response = agent_executor.invoke({"input": prompt})
     response = response['output']
+    # Replace '\n```' with an empty string
     response = response.replace('\n```', '')
+
+    # Replace 'None' with a single space ' '
+    response = response.replace('None', ' ')
     return response

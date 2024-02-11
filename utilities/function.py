@@ -126,7 +126,7 @@ def kg_qa(prompt):
     result = qa.run(prompt)
     return str(result)
 
-def youtube(prompt):
+def youtube_streamlit(prompt):
     youtube = YouTubeSearchTool()
     result = youtube.run(prompt)
     # Convert the string representation of the list back into a Python list
@@ -135,16 +135,18 @@ def youtube(prompt):
     # Extract the first link
     first_link = result_list[0]
     
-    # Example YouTube video URL
-    video_url = first_link
-
     # Extract video ID from the URL
-    video_id = re.search(r'(?<=v=)[^&#]+', video_url).group()
+    video_id = re.search(r'(?<=v=)[^&#]+', first_link).group()
 
     # Construct the thumbnail URL
     thumbnail_url = f'https://img.youtube.com/vi/{video_id}/0.jpg'
 
-    # Display the thumbnail
-    pic = display(Image(url=thumbnail_url))
-    
-    return f'{first_link}{pic}'
+    # Display the thumbnail using Streamlit
+    st.image(thumbnail_url, caption='YouTube Video Thumbnail')
+
+    # Use a markdown to display a clickable link with custom text
+    display_text = "link"  # Custom text for the link
+
+    #llm_4 to descibe the video
+    response = f"here your url [{display_text}]({first_link}) !"
+    return response
