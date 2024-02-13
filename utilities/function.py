@@ -10,7 +10,6 @@ from langchain_community.tools import YouTubeSearchTool
 from utilities.llms import llm_4, embeddings
 import streamlit as st
 import ast
-from IPython.display import Image, display
 import re
 import ast
 
