@@ -1,51 +1,53 @@
 import streamlit as st
-from utilities.agent import generate_response
+from utilities.agent_2 import generate_response
+from time import sleep
 
-
-# Page Config
-st.set_page_config("Jarvis", page_icon= "🤖")
-
-# Set up Session State
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Hi, I'm the anime experts Chatbot!  How can I help you?"},
-    ]
-
-def write_message(role, content, save = True):
-    """
-    This is a helper function that saves a message to the
-     session state and then writes a message to the UI
-    """
+def write_message(role, content, save=True):
+    """This is a helper function that saves a message to the session state and then writes a message to the UI."""
     # Append to session state
     if save:
         st.session_state.messages.append({"role": role, "content": content})
 
     # Write to UI
     if role == "assistant":
-        with st.chat_message(role, avatar = "🤖"):
+        with st.chat_message(role, avatar="🤖"):
             st.markdown(content)
     else:
-        with st.chat_message(role, avatar = "🤔"):
+        with st.chat_message(role, avatar="😖"):
             st.markdown(content)
 
-# Submit handler
 def handle_submit(message):
-    # Handle the response
+    """Handles user input, generates a response, and updates the UI."""
     with st.spinner('Thinking...'):
         response = generate_response(message)
-        from time import sleep
-        sleep(1)
+        sleep(1)  # Simulate processing time
         write_message('assistant', response)
-        
-# Display messages in Session State
-for message in st.session_state.messages:
-    write_message(message['role'], message['content'], save=False)
 
-# Handle any user input
-if prompt := st.chat_input("ask me somthing"):
-    # Display user message in chat message container
-    write_message('user', prompt)
+if __name__ == '__main__':
+    # Initialize the Streamlit UI layout.
+    st.set_page_config(page_title='General Chat Assistant', page_icon='🤖', layout='centered')
 
-    # Generate a response
-    handle_submit(prompt)
+    # Display the title and description of the chatbot.
+    with st.container():
+        st.title("General Chatbot using OpenAI")
+        st.markdown("""
+            You can ask the 🤖 about: 
+            - General chat 
+            - Everyday conversation
+            - Recommend YouTube video based on your input
 
+            **The chatbot is designed to be used for asking query YouTube video.**
+            """)
+
+    # Initialize session state for storing messages if not already done.
+    if "messages" not in st.session_state:
+        st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your general assistant Chatbot! How can I help you?"}]
+
+    # Display messages from the session state.
+    for message in st.session_state.messages:
+        write_message(message['role'], message['content'], save=False)
+
+    # Handle user input through chat input box.
+    if prompt := st.chat_input("Ask me something"):
+        write_message('user', prompt)
+        handle_submit(prompt)

@@ -141,7 +141,7 @@ def youtube_streamlit(prompt):
     thumbnail_url = f'https://img.youtube.com/vi/{video_id}/0.jpg'
 
     # Display the thumbnail using Streamlit
-    st.image(thumbnail_url, caption='YouTube Video Thumbnail')
+    st.image(thumbnail_url)
 
     # Use a markdown to display a clickable link with custom text
     display_text = "link"  # Custom text for the link
