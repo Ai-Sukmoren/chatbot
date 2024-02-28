@@ -1,5 +1,5 @@
 import streamlit as st
-from utilities.agent_2 import generate_response
+from utilities.agent import generate_response
 from time import sleep
 
 def write_message(role, content, save=True):
@@ -22,6 +22,10 @@ def handle_submit(message):
         response = generate_response(message)
         sleep(1)  # Simulate processing time
         write_message('assistant', response)
+
+def clear_chat_history():
+    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+    st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 if __name__ == '__main__':
     # Initialize the Streamlit UI layout.

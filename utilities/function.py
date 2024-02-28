@@ -2,150 +2,89 @@ from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_community.graphs import Neo4jGraph
-from langchain.chains import GraphCypherQAChain
+from langchain.chains import GraphCypherQAChain, LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores.neo4j_vector import Neo4jVector
 from langchain.chains import RetrievalQA
 from langchain_community.tools import YouTubeSearchTool
-from utilities.llms import llm_4, embeddings
+from langchain_experimental.agents.agent_toolkits import create_csv_agent,create_pandas_dataframe_agent,create_python_agent
+from langchain.agents import AgentType, initialize_agent, Tool
+from utilities.llms import llm_4,llm_3 , embeddings
+from langchain_experimental.tools import PythonREPLTool
+import pandas as pd
+import os
 import streamlit as st
 import ast
 import re
 import ast
 
+class func:
 
-def dmac_qa(question):
-    """
-    Use the  Vector Search Index
-    to augment the response from the LLM
-    """
-    embedding = embeddings
+    @staticmethod
+    def get_yotube(prompt):
+        youtube = YouTubeSearchTool()
+        result = youtube.run(prompt)
+        # Convert the string representation of the list back into a Python list
+        result_list = ast.literal_eval(result)
 
-    damac_vectorstore = FAISS.load_local("damac_database", embedding)
+        # Extract the first link
+        first_link = result_list[0]
+        
+        # Extract video ID from the URL
+        video_id = re.search(r'(?<=v=)[^&#]+', first_link).group()
 
-    template = """
-    You are an expert female lawyer who is specialized in ansewering various ploblem regard to the agreement between 2 parties.
+        # Construct the thumbnail URL
+        thumbnail_url = f'https://img.youtube.com/vi/{video_id}/0.jpg'
 
-    If no data is returned, do not attempt to answer the question.
-    Do not include any explanations or apologies in your responses. 
+        # Display the thumbnail using Streamlit
+        st.image(thumbnail_url)
 
+        # Use a markdown to display a clickable link with custom text
+        display_text = "link"  # Custom text for the link
 
-    Question: {question}
-    context: {context}
-    """
-
-    summary_template = PromptTemplate(input_variables=['question','context'],template= template)
-    
-    retriever = damac_vectorstore.as_retriever()
-    dmac_qa = RetrievalQA.from_llm(
-        llm=llm_4, 
-        retriever=retriever,
-        prompt=summary_template,
-        verbose=True
+        template = PromptTemplate.from_template(
+            """
+            Yor task is to create a shot brief about a video user is looking for in excitment tone
+            Instruction:
+            - limit the word lenght to 50 words
+        
+            user prompt to find video on youtube: {prompt}
+        
+            """
         )
-    result = dmac_qa.run(question)
-    return str(result)
+        #llm_3 to descibe the video
+        llm_chain = LLMChain(
+            llm=llm_3,
+            prompt=template,
+            verbose=True
+        )
 
-def cypher_qa(prompt):
-    graph = Neo4jGraph(
-    url="bolt://18.207.205.88:7687",
-    username="neo4j",
-    password="inclinations-odors-laser", 
-    )
+        input_variables = {"prompt": prompt}
 
-    CYPHER_GENERATION_TEMPLATE = """
-    You are an expert Neo4j Developer translating user questions into Cypher to answer questions about movies and provide recommendations.
-    Convert the user's question based on the schema.
+        res = llm_chain.invoke(input_variables)
+        res = str(res['text'])
 
-    Use only the provided relationship types and properties in the schema.
-    Do not use any other relationship types or properties that are not provided.
+        response = f"""
+        here your url [{display_text}]({first_link}) !\n
+        {res}
+        """
+        return response
 
-    Fine Tuning:
+    @staticmethod
+    def get_pandas_graph(prompt,df=False):
+        if df == False:
+            df = input("please insert your dataframe")
+        else:
+            pandas_agent = create_pandas_dataframe_agent(
+            llm=llm_4,
+            agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+            df = df,
+            verbose=False,
+            handle_parsing_errors=True,)
 
-    For movie titles that begin with "The", move "the" to the end. For example "The 39 Steps" becomes "39 Steps, The" or "the matrix" becomes "Matrix, The".
 
+            prompt = "plot a  graph for me, I want female to be pink and male to be blue and tell me a little about dataframe"
 
-    Schema:
-    {schema}
+            result = pandas_agent.invoke({"input":prompt})
 
-    Question:
-    {question}
-
-    Cypher Query:
-    """
-
-    cypher_prompt = PromptTemplate.from_template(CYPHER_GENERATION_TEMPLATE)
-    
-    cypher_chain = GraphCypherQAChain.from_llm(
-        llm=llm_4,
-        graph=graph,
-        cypher_prompt=cypher_prompt,
-        verbose=True
-    )
-
-    result = cypher_chain.run(prompt)
-    return str(result)
-
-def kg_qa(prompt):
-    """
-    Use the Neo4j Vector Search Index
-    to augment the response from the LLM
-    """
-    neo4jvector = Neo4jVector.from_existing_index(
-    embeddings,  
-    url=st.secrets["NEO4J_URI"],  
-    username=st.secrets["NEO4J_USERNAME"],  
-    password=st.secrets["NEO4J_PASSWORD"],  
-    index_name="moviePlots",  
-    node_label="Movie",  
-    text_node_property="plot", 
-    embedding_node_property="plotEmbedding",  
-    retrieval_query="""
-    RETURN
-        node.plot AS text,
-        score,
-        {
-            title: node.title,
-            directors: [ (person)-[:DIRECTED]->(node) | person.name ],
-            actors: [ (person)-[r:ACTED_IN]->(node) | [person.name, r.role] ],
-            tmdbId: node.tmdbId,
-            source: 'https://www.themoviedb.org/movie/'+ node.tmdbId
-        } AS metadata
-    """,
-    )
-
-    retriever = neo4jvector.as_retriever()
-
-    qa = RetrievalQA.from_chain_type(
-        llm_4,  
-        chain_type="stuff",  
-        retriever=retriever, 
-    )
-    # Handle the response
-    result = qa.run(prompt)
-    return str(result)
-
-def youtube_streamlit(prompt):
-    youtube = YouTubeSearchTool()
-    result = youtube.run(prompt)
-    # Convert the string representation of the list back into a Python list
-    result_list = ast.literal_eval(result)
-
-    # Extract the first link
-    first_link = result_list[0]
-    
-    # Extract video ID from the URL
-    video_id = re.search(r'(?<=v=)[^&#]+', first_link).group()
-
-    # Construct the thumbnail URL
-    thumbnail_url = f'https://img.youtube.com/vi/{video_id}/0.jpg'
-
-    # Display the thumbnail using Streamlit
-    st.image(thumbnail_url)
-
-    # Use a markdown to display a clickable link with custom text
-    display_text = "link"  # Custom text for the link
-
-    #llm_4 to descibe the video
-    response = f"here your url [{display_text}]({first_link}) !"
-    return response
+            pandas_agent.invoke(result["output"])
