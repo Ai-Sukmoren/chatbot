@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langchain.embeddings import AzureOpenAIEmbeddings
 
 
@@ -9,6 +9,13 @@ load_dotenv()
 
 AZURE_OPENAI_ENDPOINT=os.getenv("AZURE_OPENAI_ENDPOINT")
 AZURE_OPENAI_API_KEY=os.getenv("AZURE_OPENAI_API_KEY")
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
+
+llm = ChatOpenAI(
+    temperature= 0,
+    model= "gpt4_1106",
+    api_key=OPENAI_API_KEY
+)
 
 
 llm_4 = AzureChatOpenAI(

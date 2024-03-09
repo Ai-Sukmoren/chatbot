@@ -29,7 +29,7 @@ def clear_chat_history():
 
 if __name__ == '__main__':
     # Initialize the Streamlit UI layout.
-    st.set_page_config(page_title='General Chat Assistant', page_icon='🤖', layout='centered')
+    st.set_page_config(page_title='Jarvis', page_icon='🤖', layout='centered')
 
     # Display the title and description of the chatbot.
     with st.container():

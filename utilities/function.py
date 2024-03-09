@@ -21,7 +21,7 @@ import ast
 class func:
 
     @staticmethod
-    def get_yotube(prompt):
+    def get_yotube_link(prompt):
         youtube = YouTubeSearchTool()
         result = youtube.run(prompt)
         # Convert the string representation of the list back into a Python list
