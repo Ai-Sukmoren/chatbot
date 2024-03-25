@@ -9,18 +9,17 @@ from utilities.function import func
 
 tools = [
     Tool.from_function(
-        name="General Chat",
-        description="For general chat not covered by other tools",
-        func=llm_4.invoke,
-        return_direct=True
-    ),
-    Tool.from_function(
         name="Youtube search",
-        description="For proving youtube url to user",
+        description="For proving youtube url to user based on anime",
         func=func.get_yotube_link,
         return_direct=True,
+    ),
+    Tool.from_function(
+        name="Anime data search",
+        description="Provide detail of animes include its genres",
+        func=func.get_anime_data,
+        return_direct=True,
     )
-        
 ]
 
 memory = ConversationBufferWindowMemory(
@@ -31,8 +30,9 @@ memory = ConversationBufferWindowMemory(
 
 agent_prompt = PromptTemplate.from_template(
     """
-        You general chat assistant helper
+        You anime expert that has a proven experiencesd and expertise in this fields.
         Be as helpful as possible and return as much information as possible.
+        Avoide answering any question not related to anime.
 
         TOOLS:
         ------
@@ -46,7 +46,7 @@ agent_prompt = PromptTemplate.from_template(
         ```
         Thought: Do I need to use a tool? Yes
         Action: the action to take, should be one of [{tool_names}]
-        Action Input: the input to the action
+        Action Input: the input to the action "New input"
         Observation: the result of the action
         ```
         When you have a response to say to the Human, or if you do not need to use a tool, you MUST use the format:
@@ -62,8 +62,7 @@ agent_prompt = PromptTemplate.from_template(
         {chat_history}
 
         New input: {input}
-        {agent_scratchpad}
-        
+        Agent scratchpad: {agent_scratchpad}
         """)
 
 agent = create_react_agent(llm_4, 

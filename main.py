@@ -33,19 +33,18 @@ if __name__ == '__main__':
 
     # Display the title and description of the chatbot.
     with st.container():
-        st.title("General Chatbot using OpenAI")
+        st.title("Animes Chatbot using OpenAI")
         st.markdown("""
             You can ask the 🤖 about: 
-            - General chat 
-            - Everyday conversation
-            - Recommend YouTube video based on your input
+            - Animme details and Genres 
+            - Recommend YouTube video based on your anime input
 
-            **The chatbot is designed to be used for asking query YouTube video.**
+            **The chatbot is designed to be used for asking anime related question and YouTube serch.**
             """)
 
     # Initialize session state for storing messages if not already done.
     if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your general assistant Chatbot! How can I help you?"}]
+        st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your anime expert assistant Chatbot! How can I help you?"}]
 
     # Display messages from the session state.
     for message in st.session_state.messages:
