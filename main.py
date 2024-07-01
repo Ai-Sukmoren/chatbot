@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # Use columns to place the logo on the left.
     col1, col2, col3 = st.columns([1, 3, 1])  # Center column is much wider to keep the logo on the left.
     with col1:
-        st.image(r"C:\Users\Ai Sukmoren\Desktop\chatbot\pic\Logo Iambest2021-13.png", width=120)  # Adjust the path as needed
+        st.image(r"C:\Users\Ai Sukmoren\Desktop\chatbot\pic\LOGO-KBS.png", width=120)  # Adjust the path as needed
 
     with st.container():
         st.title("School Demo Session using AI 📚")
