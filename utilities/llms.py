@@ -15,5 +15,5 @@ llm = ChatOpenAI(
 
 embedding = OpenAIEmbeddings(
     api_key=API_KEY,
-    model='text-embedding-ada-002'
+    model='text-embedding-3-small'
 )

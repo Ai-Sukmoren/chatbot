@@ -7,12 +7,19 @@ from utilities.function import chain_function
 
 
 gen_rag_answer = """This tool is use to answer the question based on the information in vector index or rag only"""
+get_yotube_link = """This tool is use to recommend the youtube video that user is askimg only"""
 
 tools = [
     Tool.from_function(
         name="gen_rag_answer",
         description=gen_rag_answer,
         func=chain_function.gen_rag_answer,
+        return_direct=True,
+    ),
+    Tool.from_function(
+        name="get_yotube_link",
+        description=get_yotube_link,
+        func=chain_function.get_yotube_link,
         return_direct=True,
     )
 ]
