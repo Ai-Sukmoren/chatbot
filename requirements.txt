@@ -10,3 +10,4 @@ faiss-cpu
 tiktoken
 python-dotenv
 streamlit
+youtube-search
