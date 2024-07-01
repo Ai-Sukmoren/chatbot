@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  docker-chat:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    tty: true
+    image: docker-chat
+    ports:
+      - "80:80"
+
