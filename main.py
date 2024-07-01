@@ -71,8 +71,8 @@ def handle_pdf_upload(pdf_file):
         # Provide feedback to the user
         st.write("""
                  PDF processed and vector store created successfully\n 
-                 !caution\n
-                 delete the file before proceed with the question 
+                 - !caution\n
+                 - delete the file before proceed with the question 
                  """)
         
         # (Optional) Save the FAISS index to a file if needed      
