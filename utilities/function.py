@@ -5,6 +5,7 @@ from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe
 from utilities.llms import llm
 from langchain_community.graphs import Neo4jGraph
 from langchain.chains import GraphCypherQAChain
+from utilities.prompts import ChatPrompt
 import pandas as pd
 import os
 import streamlit as st
@@ -57,27 +58,11 @@ class func:
                     username=os.getenv('NEO4J_USERNAME'), 
                     password=os.getenv('NEO4J_PASSWORD'),
                     database=os.getenv('NE04J_DB'))
-        prompt = """
-        You are an expert Neo4j Developer translating user questions into Cypher to answer questions about movies and provide recommendations.
-        Convert the user's question based on the schema.
-
-        instruction:
-        - all animes is in lower cases
-
-        Varibales:
-        Schema {schema},
-        Question {question}
-        """
-
-        cypher_generation_prompt = PromptTemplate(
-            template=prompt,
-            input_variables=["schema", "question"],
-        )
-
+      
         cypher_chain = GraphCypherQAChain.from_llm(
             llm=llm,
             graph=graph,
-            cypher_prompt=cypher_generation_prompt,
+            cypher_prompt=ChatPrompt.prompt_cypher_query(),
             verbose=True
         )
         res = cypher_chain.invoke(ques)
