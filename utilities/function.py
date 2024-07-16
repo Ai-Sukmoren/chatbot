@@ -2,7 +2,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.tools import YouTubeSearchTool
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from utilities.llms import llm_4
+from utilities.llms import llm
 from langchain_community.graphs import Neo4jGraph
 from langchain.chains import GraphCypherQAChain
 import pandas as pd
@@ -75,7 +75,7 @@ class func:
         )
 
         cypher_chain = GraphCypherQAChain.from_llm(
-            llm=llm_4,
+            llm=llm,
             graph=graph,
             cypher_prompt=cypher_generation_prompt,
             verbose=True
