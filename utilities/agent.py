@@ -2,7 +2,7 @@ from langchain.tools import Tool
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
-from utilities.llms import llm_4
+from utilities.llms import llm
 from utilities.function import func
 
 
@@ -65,14 +65,15 @@ agent_prompt = PromptTemplate.from_template(
         Agent scratchpad: {agent_scratchpad}
         """)
 
-agent = create_react_agent(llm_4, 
+agent = create_react_agent(llm, 
                            tools, 
                            agent_prompt)
 
 agent_executor = AgentExecutor(agent=agent, 
                                tools=tools,
                                memory=memory, 
-                               verbose=True)
+                               verbose=True,
+                               handle_parsing_errors=True)
 
 def generate_response(prompt):
     """

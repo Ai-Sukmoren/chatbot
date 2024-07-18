@@ -2,55 +2,70 @@ import streamlit as st
 from utilities.agent import generate_response
 from time import sleep
 
-def write_message(role, content, save=True):
-    """This is a helper function that saves a message to the session state and then writes a message to the UI."""
-    # Append to session state
-    if save:
-        st.session_state.messages.append({"role": role, "content": content})
+class AnimeChatbot:
+    def __init__(self):
+        self.init_ui()
+        self.init_session_state()
+        self.display_logo()
+        self.display_title()
+        self.display_description()
+        self.display_messages()
+        self.handle_user_input()
 
-    # Write to UI
-    if role == "assistant":
-        with st.chat_message(role, avatar="🤖"):
-            st.markdown(content)
-    else:
-        with st.chat_message(role, avatar="😖"):
-            st.markdown(content)
+    def init_ui(self):
+        st.set_page_config(page_title='Anime Chatbot', page_icon='🤖', layout='centered')
 
-def handle_submit(message):
-    """Handles user input, generates a response, and updates the UI."""
-    with st.spinner('Thinking...'):
-        response = generate_response(message)
-        sleep(1)  # Simulate processing time
-        write_message('assistant', response)
+    def init_session_state(self):
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your anime expert assistant Chatbot! How can I help you?"}]
 
-def clear_chat_history():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
-    st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
+    def display_logo(self):
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col1:
+            st.image('pic\\image.png', width=200)  # Adjust the path as needed
 
-if __name__ == '__main__':
-    # Initialize the Streamlit UI layout.
-    st.set_page_config(page_title='Jarvis', page_icon='🤖', layout='centered')
+    def display_title(self):
+        st.title("Anime Chatbot using OpenAI")
 
-    # Display the title and description of the chatbot.
-    with st.container():
-        st.title("Animes Chatbot using OpenAI")
+    def display_description(self):
         st.markdown("""
             You can ask the 🤖 about: 
-            - Animme details and Genres 
-            - Recommend YouTube video based on your anime input
+            - Anime details and genres 
+            - Recommend YouTube videos based on your anime input
 
-            **The chatbot is designed to be used for asking anime related question and YouTube serch.**
+            **The chatbot is designed to be used for asking anime-related questions and YouTube searches.**
             """)
 
-    # Initialize session state for storing messages if not already done.
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Hi, I'm your anime expert assistant Chatbot! How can I help you?"}]
+    def display_messages(self):
+        for message in st.session_state.messages:
+            self.write_message(message['role'], message['content'], save=False)
 
-    # Display messages from the session state.
-    for message in st.session_state.messages:
-        write_message(message['role'], message['content'], save=False)
+    def write_message(self, role, content, save=True):
+        """Saves a message to the session state and writes a message to the UI."""
+        if save:
+            st.session_state.messages.append({"role": role, "content": content})
 
-    # Handle user input through chat input box.
-    if prompt := st.chat_input("Ask me something"):
-        write_message('user', prompt)
-        handle_submit(prompt)
+        avatar = "🤖" if role == "assistant" else "😖"
+        with st.chat_message(role, avatar=avatar):
+            st.markdown(content)
+
+    def handle_submit(self, message):
+        """Handles user input, generates a response, and updates the UI."""
+        with st.spinner('Thinking...'):
+            response = generate_response(message)
+            sleep(1)  # Simulate processing time
+            self.write_message('assistant', response)
+
+    def handle_user_input(self):
+        if prompt := st.chat_input("Ask me something"):
+            self.write_message('user', prompt)
+            self.handle_submit(prompt)
+
+    @staticmethod
+    def clear_chat_history():
+        st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+        st.sidebar.button('Clear Chat History', on_click=AnimeChatbot.clear_chat_history)
+
+
+if __name__ == '__main__':
+    AnimeChatbot()
